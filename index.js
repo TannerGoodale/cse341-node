@@ -3,6 +3,8 @@ const PORT = process.env.PORT || 5000
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const Blog = require('./models/blog');
+const path = require('path');
+const $ = require('jquery');
 
 // express app
 const app = express();
@@ -36,27 +38,41 @@ app.get('/about', (req, res) => {
 });
 
 // blog routes
-app.get('/blogs/create', (req, res) => {
-  res.render('create', { title: 'Create a new blog' });
-});
+
+//app.get('/blogs/create', (req, res) => {
+//  res.render('create', { title: 'Create a new blog' });
+//});
 
 app.get('/blogs', (req, res) => {
   Blog.find().sort({ createdAt: -1 })
     .then(result => {
       res.render('index', { blogs: result, title: 'All blogs' });
+      //console.log(result);
     })
     .catch(err => {
       console.log(err);
     });
 });
 
+app.get('/getData', (req, res) => {
+  Blog.find().sort({ createdAt: -1 })
+  .then(result => {
+    res.status(200).json(result);
+    console.log(result);
+  })
+  .catch(err => {
+    console.log(err);
+  });
+})
+
 app.post('/blogs', (req, res) => {
   // console.log(req.body);
   const blog = new Blog(req.body);
-
+  
   blog.save()
     .then(result => {
-      res.redirect('/blogs');
+      console.log("post added");
+      res.status(200).json({suc: true});
     })
     .catch(err => {
       console.log(err);
